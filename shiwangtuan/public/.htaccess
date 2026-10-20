@@ -1,0 +1,18 @@
+# 视旺团官网 web 根目录配置 (Apache)
+# 若使用 Nginx, 请将站点 root 指向 public/ 目录, 无需此文件
+
+DirectoryIndex index.php
+
+# 禁止访问以 . 开头的隐藏文件
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# 关闭目录列表
+Options -Indexes
+
+# 简单安全头
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>

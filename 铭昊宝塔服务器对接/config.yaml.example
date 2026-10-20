@@ -1,0 +1,12 @@
+# 宝塔面板部署配置模板
+# 复制为 ~/.openclaw/minghao-baota.yaml 后填写，或用 scripts/bt-config.js add 生成
+servers:
+  - name: prod                # 服务器别名，push/db 用 -s 指定
+    panel_url: "https://IP:PORT/安全入口"   # 必须带"安全入口"路径
+    username: "面板账号"
+    password: "面板密码"
+    api_key: ""               # 可选：宝塔 API 接口密钥；填了数据库写操作优先走 DoSql
+    remote_root: "/www/wwwroot/项目目录"     # 代码同步的服务器根目录
+    database: "数据库名"                     # 默认执行 SQL 的库
+    site_url: "https://站点域名"             # 一次性执行器兜底需要站点地址
+    verify_ssl: false         # 自签证书填 false

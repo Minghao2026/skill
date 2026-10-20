@@ -1,0 +1,434 @@
+/* ===========================================================
+   视旺团官网 · 移动端专属样式 (mobile.css)
+   与桌面端 style.css 完全分离的第二套排版，不是桌面版压缩。
+   全部规则包在文件级 @media (max-width:768px) 内自保护，
+   即使 <link> 误去掉 media 属性也不会污染桌面端。
+   目标：单手可达、视觉聚焦、触控友好、加载快。
+   =========================================================== */
+
+/* ---------- 移动端基础变量覆盖 ---------- */
+:root{
+  --m-gutter: 18px;          /* 移动端左右安全边距 */
+  --m-radius: 18px;
+  --m-tap: 44px;             /* 最小可点区域 */
+  --m-safe-b: env(safe-area-inset-bottom, 0px);
+}
+
+/* 触控设备：去掉点击高亮、禁止误选 */
+@media (hover: none){
+  *{ -webkit-tap-highlight-color: transparent; }
+  a,button,.btn{ touch-action: manipulation; }
+}
+
+/* ===========================================================
+   以下全部规则仅在 <=768px 生效（文件级自保护：
+   无论 <link> 是否带 media 属性，都不会污染桌面端）
+   =========================================================== */
+@media (max-width: 768px){
+  /* ---------- 全局：正文与容器 ---------- */
+  body{
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-text-size-adjust: 100%;
+    padding-bottom: 0;
+  }
+  .container{ width:100%; max-width:none; margin:0; padding:0 var(--m-gutter); }
+  .section{ padding: 44px 0; }
+
+  /* 移动端隐藏桌面专属的悬浮装饰 */
+  .hero-badge,.hero-kws{ display:none !important; }
+
+  /* ---------- 重置桌面端遗留的固定/最大宽度 ----------
+     1024px 断点里的 max-width:560/600px 在 360~414px 视口会撑破容器，
+     移动端一律改为 100%，让内容始终贴合 18px 安全边距。
+     min-width:0 是关键：grid/flex 子项默认 min-width:auto，
+     内部横向滚动卡（.hero-mini 671px）会反过来把父级网格列撑到 635px。 */
+  .hero-inner,.hero-text,.hero-visual,
+  .hero-sub,.hero-actions,.hero-chips{ max-width:none; width:100%; min-width:0; }
+  .hero-inner{ padding-bottom:0; grid-template-columns:minmax(0,1fr); }
+  .hero-text,.hero-visual{ min-width:0; }
+
+  /* ---------- 顶部导航(移动端专属) ---------- */
+  .nav-inner{ height:56px; gap:12px; }
+  .brand{ font-size:17px; gap:8px; }
+  .brand .brand-mark{ width:30px; height:30px; border-radius:8px; }
+
+  /* 汉堡按钮加大到易点 */
+  .nav-toggle{
+    display:flex !important; margin-left:auto;
+    width:var(--m-tap); height:var(--m-tap);
+    align-items:center; justify-content:center;
+    gap:5px; background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12); border-radius:12px;
+    padding:0; cursor:pointer;
+  }
+  .nav-toggle span{ width:20px; height:2px; background:#fff; border-radius:2px; transition:.3s; }
+  .nav-toggle.active span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+  .nav-toggle.active span:nth-child(2){ opacity:0; }
+  .nav-toggle.active span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+
+  /* 移动端菜单：全屏抽屉 */
+  .nav-links{
+    position:fixed; inset:56px 0 0 0; z-index:120;
+    flex-direction:column; gap:0;
+    background:#04180f;
+    padding:8px var(--m-gutter) calc(24px + var(--m-safe-b));
+    overflow-y:auto; -webkit-overflow-scrolling:touch;
+    display:none; margin-left:0;
+    transform:translateY(-8px); opacity:0; transition:.28s ease;
+  }
+  .nav-links.open{ display:flex; transform:none; opacity:1; }
+  .nav-links a{
+    width:100%; min-height:var(--m-tap);
+    display:flex; align-items:center;
+    font-size:16.5px; font-weight:600; color:#dff2e8;
+    padding:14px 4px; border-bottom:1px solid rgba(255,255,255,.07);
+  }
+  .nav-links a::after{ display:none; }        /* 桌面下划线在移动端不适用 */
+  .nav-links a:active{ background:rgba(62,240,166,.10); }
+  .nav-links .nav-cta{
+    margin-top:20px; justify-content:center;
+    width:100%; min-height:52px; font-size:16.5px; border-radius:14px;
+    border-bottom:none;
+  }
+
+  /* ---------- 首屏 Hero(移动端专属：首屏三件套) ----------
+     H5 首屏铁律：人物 + 主标题 + 转化按钮必须在折叠线内。
+     四宫格介绍卡改为一行横向滑动，把 231px 压到 ~76px。 */
+  .hero{ padding:26px 0 22px; text-align:center; }
+  .hero-mesh{ background-size:34px 34px; opacity:.4; }
+  .hero-orb{ display:none; }                  /* 移动端去掉大光斑，降渲染开销 */
+
+  .hero-visual{ order:-1; min-height:0; margin:0 0 14px; display:block; }
+  .hero-glowring{
+    position:relative; width:min(60vw,236px);
+    margin:0 auto; aspect-ratio:1;
+  }
+  .hero-character{ margin-top:-195px; }
+  .hero-img{
+    max-height:min(272px,34vh);
+    margin:0 auto;
+    filter:drop-shadow(0 22px 40px rgba(0,0,0,.5));
+    animation-duration:8s;                     /* 放慢，柔和不晃眼 */
+  }
+
+  .hero-tag{ font-size:12px; padding:6px 12px; }
+  .hero h1{
+    font-size:26px !important; line-height:1.28; margin:12px 0 10px;
+    letter-spacing:-.01em;
+  }
+  .hero h1 .hl{ display:none; }
+  .hero-sub{ font-size:14.5px; line-height:1.7; color:#b3c9bd; max-width:none; margin:0 auto; }
+
+  /* 四宫格介绍 → 一行横向滑动卡（省 ~155px，把 CTA 拉进首屏） */
+  /* 四宫格介绍 → 一行横向滑动卡（省 ~155px，把 CTA 拉进首屏）
+     width:100% + 负 margin 让卡片能"出血"到屏幕边缘，
+     min-width:0 保证它不会把父级 grid 列撑宽。 */
+  .hero-mini{
+    display:flex; gap:10px;
+    max-width:none; width:100%; min-width:0;
+    margin:20px calc(var(--m-gutter) * -1) 0;
+    padding:0 var(--m-gutter) 4px;
+    overflow-x:auto; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none; scroll-snap-type:x proximity;
+    text-align:left;
+  }
+  .hero-mini::-webkit-scrollbar{ display:none; }
+  .hero-mini .m{
+    flex:0 0 auto; scroll-snap-align:start;
+    flex-direction:row; align-items:center; gap:9px;
+    width:auto; min-width:max-content; max-width:74vw;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(62,240,166,.16);
+    border-radius:13px; padding:9px 13px;
+  }
+  .hero-mini .m .mi{ width:28px; height:28px; font-size:14px; border-radius:8px; }
+  .hero-mini .m b{ font-size:13px; white-space:nowrap; }
+  .hero-mini .m span{ font-size:11px; white-space:nowrap; }
+
+  /* 移动端 CTA：全宽大按钮，紧跟副标题，落在首屏折叠线内 */
+  .hero-actions{
+    order:0; flex-direction:column; gap:10px;
+    margin-top:20px; width:100%;
+  }
+  .hero-actions .btn{
+    width:100%; min-height:50px; justify-content:center;
+    font-size:16.5px; border-radius:14px; letter-spacing:.02em;
+  }
+  /* 介绍卡排到 CTA 之后 */
+  .hero-mini{ order:1; }
+  .hero-chips{ order:2; }
+
+  .hero-chips{
+    display:grid; grid-template-columns:repeat(3,1fr);
+    gap:8px; margin-top:20px; width:100%;
+  }
+  .hero-chips .chip{
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(62,240,166,.14);
+    border-radius:12px; padding:12px 6px; text-align:center;
+  }
+  .hero-chips .chip b{ font-size:19px; }
+  .hero-chips .chip b i{ font-size:12px; }
+  .hero-chips .chip span{ font-size:10.5px; margin-top:3px; }
+
+  /* 资质墙：横向滑动，不换行堆叠 */
+  .trust{ padding:2px 0; }
+  .trust-inner{
+    flex-wrap:nowrap; overflow-x:auto; gap:10px;
+    padding:12px var(--m-gutter);
+    -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .trust-inner::-webkit-scrollbar{ display:none; }
+  .trust-label{
+    font-size:12px; white-space:nowrap; color:#8fb4a4;
+    display:flex; align-items:center; flex:none;
+  }
+  .pf-badge{
+    flex:none; white-space:nowrap;
+    font-size:12.5px; padding:7px 12px; border-radius:10px;
+  }
+  .pf-badge .ic{ width:20px; height:20px; font-size:11px; border-radius:6px; }
+
+  /* ---------- 通用板块标题 ---------- */
+  .sec-head{ text-align:left; margin-bottom:26px; }
+  .sec-head .sec-kicker{
+    font-size:11.5px; padding:5px 11px; border-radius:999px;
+    display:inline-block; margin-bottom:10px;
+  }
+  .sec-head h2{
+    font-size:22px !important; line-height:1.35; margin:0 0 10px;
+  }
+  .sec-head p{ font-size:14px; line-height:1.7; }
+
+  /* ---------- 服务卡(移动端：横向紧凑卡) ---------- */
+  .svc-grid{ grid-template-columns:1fr; gap:14px; }
+  .svc-card{
+    display:grid; grid-template-columns:104px 1fr;
+    border-radius:var(--m-radius); overflow:hidden;
+  }
+  .svc-media{
+    height:100%; min-height:132px;
+    border-radius:0 !important;
+  }
+  .svc-body{ padding:14px 15px; }
+  .svc-body h3{ font-size:16.5px; margin:0 0 6px; }
+  .svc-body p{ font-size:13px; line-height:1.65; margin:0 0 8px; }
+  .svc-points li{ font-size:12.5px; padding-left:16px; }
+  .svc-points li::before{ width:5px; height:5px; left:3px; top:8px; }
+
+  /* ---------- 业绩数字带 ---------- */
+  .stats-sec{ padding:44px 0; }
+  .stats-sec .sec-head{ text-align:left; }
+  .stats-grid{ grid-template-columns:1fr 1fr; gap:12px; }
+  .stat{
+    padding:18px 12px; border-radius:16px; text-align:center;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(62,240,166,.14);
+  }
+  .stat .ic{ width:34px; height:34px; margin:0 auto 8px; font-size:16px; border-radius:10px; }
+  .stat-num{ font-size:30px !important; }
+  .stat-unit{ font-size:12px; }
+  .stat-label{ font-size:12px; margin-top:4px; }
+
+  /* ---------- 案例卡 ---------- */
+  .case-grid{ grid-template-columns:1fr; gap:16px; }
+  .case{ border-radius:var(--m-radius); text-align:left; }
+  .case-media{ height:190px; }
+  .case-body{ padding:16px; }
+  .case-body h3{ font-size:17px; }
+  .case-body p{ font-size:13.5px; }
+  .case-metrics, .metrics, .case-body ul{ text-align:left; }
+  .metrics li{ font-size:12.5px; }
+
+  /* ---------- AI 区块 ---------- */
+  .ai-sec{ padding:44px 0; }
+  .ai-wrap{ grid-template-columns:1fr; gap:22px; }
+  .ai-photo{ height:210px; border-radius:var(--m-radius); }
+  .ai-grid{ grid-template-columns:1fr; gap:12px; }
+  .ai-card{ padding:16px; border-radius:16px; text-align:left; }
+  .ai-ic{
+    width:38px; height:38px; font-size:17px; border-radius:11px;
+    display:grid; place-items:center; margin-bottom:10px;
+  }
+  .ai-card h3{ font-size:15.5px; margin:0 0 5px; }
+  .ai-card p{ font-size:13px; line-height:1.65; margin:0; }
+
+  /* ---------- 核心优势 ---------- */
+  .adv-grid{ grid-template-columns:1fr; gap:12px; text-align:left; }
+  .adv-card{
+    display:flex; gap:13px; align-items:flex-start;
+    padding:16px; border-radius:16px; text-align:left;
+  }
+  .adv-ic{
+    width:38px; height:38px; font-size:18px; border-radius:11px;
+    flex:none; display:grid; place-items:center; margin-bottom:0;
+  }
+  .adv-card h3{ font-size:15.5px; margin:0 0 5px; text-align:left; }
+  .adv-card p{ font-size:12.5px; line-height:1.6; margin:0; text-align:left; }
+  /* 兼容旧标记(.adv) */
+  .adv{ display:flex; gap:13px; align-items:flex-start; text-align:left; }
+
+  /* ---------- 服务流程(移动端：竖向时间轴) ---------- */
+  .steps{ grid-template-columns:1fr; gap:0; }
+  .step{
+    display:grid; grid-template-columns:44px 1fr;
+    grid-template-areas:"sn sx" "sn title" "sn desc";
+    column-gap:14px; row-gap:2px;
+    align-items:start; position:relative;
+    padding:0 0 24px; margin:0;
+    background:none; border:none; box-shadow:none;
+    text-align:left;
+  }
+  /* 时间轴竖线 */
+  .step:not(:last-child)::before{
+    content:""; position:absolute;
+    left:22px; top:46px; bottom:0; width:2px;
+    background:linear-gradient(180deg,rgba(62,240,166,.5),rgba(62,240,166,.10));
+  }
+  .step .sn{
+    grid-area:sn; width:44px; height:44px; border-radius:14px;
+    font-size:19px; font-weight:800; font-variant-numeric:tabular-nums;
+    display:grid; place-items:center;
+    position:relative; z-index:1;
+    color:#04180f;
+    background:linear-gradient(135deg,#3ef0a6,#07C160);
+    border:1px solid rgba(62,240,166,.50);
+    box-shadow:0 6px 16px rgba(7,193,96,.30);
+  }
+  .step .sx{ grid-area:sx; font-size:11px; letter-spacing:.08em; color:#6f9c86; align-self:center; justify-self:start; }
+  .step h3{ grid-area:title; font-size:16px; margin:2px 0 4px; justify-self:start; }
+  .step p{ grid-area:desc; font-size:13px; line-height:1.65; margin:0; justify-self:start; }
+
+  /* ---------- 行业方案 ---------- */
+  .sol-grid{ grid-template-columns:1fr 1fr; gap:12px; }
+  .sol{ padding:16px 12px; border-radius:16px; }
+  .sol .top{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px; }
+  .sol .ic{
+    width:36px; height:36px; font-size:17px; border-radius:11px;
+    display:grid; place-items:center;
+  }
+  .sol h3{ font-size:15px; margin:0; }
+  .sol .pain{ font-size:11.5px; line-height:1.6; margin:10px 0 8px; text-align:left; }
+  .sol .fix{ display:none; }              /* 手机隐藏次要说明，保持清爽 */
+
+  /* ---------- 套餐方案 ---------- */
+  .plans{ grid-template-columns:1fr; gap:16px; }
+  .plan{ padding:22px 18px; border-radius:20px; }
+  .plan h3{ font-size:18px; }
+  .plan .price b{ font-size:34px; }
+  .plan-feat li{ font-size:13.5px; }
+  .plan .btn{ width:100%; min-height:50px; justify-content:center; font-size:16px; }
+
+  /* ---------- 资质荣誉 ---------- */
+  .honor-grid{ grid-template-columns:1fr 1fr; gap:12px; }
+  .honor{ padding:18px 12px; border-radius:16px; }
+  .honor .em{ font-size:26px; margin-bottom:8px; }
+  .honor b{ font-size:14.5px; }
+  .honor span{ font-size:11.5px; }
+
+  /* ---------- 跑马灯 ---------- */
+  .marquee{ padding:16px 0; }
+  .marquee-track{ gap:26px; }
+
+  /* ---------- 底部 CTA ---------- */
+  .cta-sec{ padding:40px 0; }
+  .cta-box{ padding:26px 18px; border-radius:22px; text-align:center; }
+  .cta-box h2{ font-size:21px !important; line-height:1.4; }
+  .cta-box p{ font-size:14px; }
+  .cta-form{ flex-direction:column; gap:10px; padding:0; background:none; border:none; }
+  .cta-form input{
+    width:100%; min-height:52px; font-size:16px;
+    border-radius:14px; padding:0 16px; text-align:center;
+  }
+  .cta-form .btn{ width:100%; min-height:52px; font-size:16.5px; border-radius:14px; }
+
+  /* ---------- 联系我们(移动端：先建立信任，再要信息) ----------
+     H5 表单铁律：label 常驻可见（不靠 placeholder 撑）、
+     输入框 ≥50px 且字号 16px（防 iOS 自动缩放）、
+     出错时保留用户输入，仅高亮边框并给内联提示。 */
+  .contact-sec{ background:linear-gradient(180deg,#f4f9f6 0%,#eaf3ee 100%); }
+  .contact-grid{ grid-template-columns:minmax(0,1fr); gap:30px; }
+
+  .ct-h2{ font-size:25px !important; line-height:1.3; }
+  .contact-lead{ font-size:14.5px; line-height:1.75; margin-bottom:24px; }
+
+  .info-card{ border-radius:18px; }
+  .info-hit{ padding:15px 16px; gap:13px; }
+  .info-hit .ic{ width:40px; height:40px; font-size:18px; }
+  .info-hit .tx b{ font-size:12px; margin-bottom:2px; }
+  .info-hit .tx strong{ font-size:15.5px; }
+  .info-hit .tx strong.hl-num{ font-size:19px; }
+  .info-hit .go{ display:none; }               /* 手机端隐藏"拨打/写信"提示，热区已足够 */
+  .copy-btn{ min-height:40px; padding:0 16px; } /* 触控目标达标 */
+
+  .qr-box{ padding:18px 16px; gap:15px; }
+  .qr-box .qr{ width:96px; height:96px; }
+  .qr-tx b{ font-size:14.5px; margin-bottom:4px; }
+  .qr-tx span{ font-size:12.5px; }
+
+  .contact-form{ padding:24px 16px 20px; border-radius:18px; }
+  .cf-head{ margin-bottom:22px; }
+  .cf-head h3{ font-size:19px; }
+  .cf-head p{ font-size:13px; }
+
+  .contact-form .frow{ grid-template-columns:1fr; gap:16px; margin-bottom:18px; }
+  .field label{ font-size:13.5px; margin-bottom:7px; }
+  .contact-form input, .contact-form textarea, .contact-form select{
+    min-height:52px; font-size:16px;     /* 16px 防 iOS 自动缩放 */
+    border-radius:10px; padding:14px;
+  }
+  .contact-form textarea{ min-height:112px; margin-bottom:20px; }
+  .cf-submit{ min-height:54px; font-size:16.5px; border-radius:11px; }
+  .cf-note{ font-size:12px; margin-top:16px; padding-top:16px; }
+
+  /* ---------- 页脚 ---------- */
+  .footer{ padding-bottom:calc(84px + var(--m-safe-b)); }  /* 给底部操作条留位 */
+  .footer-inner{ grid-template-columns:1fr; gap:24px; }
+  .footer h4{ font-size:15px; margin-bottom:12px; }
+  .footer li, .footer a{ font-size:13.5px; min-height:34px; display:flex; align-items:center; }
+  .footer-bar{ font-size:12px; text-align:center; }
+
+  /* ---------- 底部固定操作条(移动端专属) ---------- */
+  .m-bar{
+    position:fixed; left:0; right:0; bottom:0; z-index:130;
+    display:flex; gap:10px;
+    padding:10px var(--m-gutter) calc(10px + var(--m-safe-b));
+    background:rgba(6,28,20,.94);
+    -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
+    border-top:1px solid rgba(62,240,166,.18);
+    box-shadow:0 -8px 30px rgba(0,0,0,.45);
+    transform:translateY(110%); transition:transform .32s cubic-bezier(.2,.8,.2,1);
+  }
+  .m-bar.show{ transform:none; }
+  .m-bar a{
+    flex:1; min-height:50px; border-radius:14px;
+    display:flex; align-items:center; justify-content:center; gap:7px;
+    font-size:16px; font-weight:700; letter-spacing:.02em;
+  }
+  .m-bar .m-tel{ background:rgba(255,255,255,.10); color:#eafaf1; border:1px solid rgba(255,255,255,.18); }
+  .m-bar .m-sub{ background:linear-gradient(135deg,#07C160,#3ef0a6); color:#04180f; box-shadow:0 8px 22px rgba(7,193,96,.36); }
+  .m-bar .em{ font-size:17px; }
+}
+
+
+  /* ---------- 超窄屏兜底(<=380px)：iPhone SE / 小屏安卓 ---------- */
+  @media (max-width: 380px){
+    .hero{ padding:20px 0 18px; }
+    .hero h1{ font-size:23px !important; }
+    .hero-sub{ font-size:13.5px; }
+    .hero-glowring{ width:min(56vw,205px); }
+    .hero-character{ margin-top:-170px; }
+    .hero-img{ max-height:min(232px,30vh); }
+    .hero-actions{ margin-top:16px; gap:8px; }
+    .hero-actions .btn{ min-height:48px; font-size:15.5px; }
+    .hero-mini{ margin-top:16px; }
+    .hero-chips{ margin-top:16px; }
+    .hero-chips .chip{ padding:10px 4px; }
+    .hero-chips .chip b{ font-size:18px; }
+    .section{ padding:38px 0; }
+    .sec-head h2{ font-size:20px !important; }
+    .svc-card{ grid-template-columns:88px 1fr; }
+    .m-bar{ gap:8px; }
+    .m-bar a{ min-height:48px; font-size:15px; }
+  }
